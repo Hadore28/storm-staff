@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "sdk": 1,
+  "generatedAt": "2026-10-30T18:48:16.127Z",
+  "extensions": [
+    {
+      "pkg": "storm.addons.discord",
+      "name": "Discord bot",
+      "version": "1.0.0",
+      "description": "Posts storm's news and alerts to Discord channels, and gives staff slash commands.",
+      "file": "extensions/storm.addons.discord-1.0.0.js",
+      "sha256": "ab2e7bad3147c217d3adb571398c4a2ad1450e934b723b64c0ca9efb9d8d19eb",
+      "size": 3402
+    },
+    {
+      "pkg": "storm.addons.telegram",
+      "name": "Telegram bot",
+      "version": "1.0.0",
+      "description": "Posts storm's news and alerts to Telegram chats, and gives staff slash commands.",
+      "file": "extensions/storm.addons.telegram-1.0.0.js",
+      "sha256": "8bbe9b036102beb61fae2d700cd583a55f109b940e0907f2e7cc374ea35d93ea",
+      "size": 2907
+    }
+  ]
+}
