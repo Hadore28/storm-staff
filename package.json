@@ -1,0 +1,22 @@
+{
+  "name": "storm-staff",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit -p .",
+    "build": "bun scripts/build-repo.ts",
+    "keys": "bun scripts/keys.ts"
+  },
+  "dependencies": {
+    "@storm-staff/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "bun@1.4.2"
+}

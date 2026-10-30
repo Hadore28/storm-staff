@@ -1,0 +1,12 @@
+{
+  "name": "@storm-staff/sdk",
+  "version": "1.0.0",
+  "description": "The contract storm's staff extensions are written against.",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT"
+}
