@@ -3,7 +3,7 @@
 The staff extensions behind [storm](https://stormd.site): bots and anything else
 that works for the team rather than serving content. Each **extension** runs on
 the site, which downloads it from this repo, checks its signature, and gives it
-its own on/off switch and settings in Admin → Addons.
+its own on/off switch and settings in Admin → Extensions.
 
 ```
 packages/sdk     the contract an extension is written against
@@ -18,7 +18,7 @@ scripts/         build-repo, keys
 
 ## How an extension works
 
-An extension exports `defineAddon({ pkg, name, version, description, settings })`
+An extension exports `defineExtension({ pkg, name, version, description, settings })`
 and implements what it needs:
 
 | `onEvent(event, ctx)` | something happened on storm: an announcement, a ticket, a staff sign-in |
@@ -41,4 +41,4 @@ signed build to the `repo` branch.
 ## Signing
 
 `bun run keys` makes a key pair. The private key is the `STORM_SIGNING_KEY` secret
-on GitHub; the public key goes in the site's `ADDONS_PUBLIC_KEY`.
+on GitHub; the public key goes in the site's `STAFF_PUBLIC_KEY`.

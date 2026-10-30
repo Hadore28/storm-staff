@@ -10,7 +10,7 @@ import { Glob } from "bun";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
-import { SDK_VERSION, type Addon } from "@storm-staff/sdk";
+import { SDK_VERSION, type Extension } from "@storm-staff/sdk";
 
 interface Entry {
   pkg: string;
@@ -37,7 +37,7 @@ const entries: Entry[] = [];
 const pkgs = new Set<string>();
 
 for (const entry of [...new Glob("extensions/*/src/index.ts").scanSync(ROOT)].sort()) {
-  const ext = (await import(join(ROOT, entry))).default as Addon;
+  const ext = (await import(join(ROOT, entry))).default as Extension;
   const where = entry.replace(/\\/g, "/");
 
   if (ext.sdk !== SDK_VERSION) throw new Error(`${where}: built for sdk ${ext.sdk}, this repo is on ${SDK_VERSION}`);

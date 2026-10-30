@@ -1,8 +1,8 @@
-import { defineAddon, eventText, type AddonContext, type StormCommand } from "@storm-staff/sdk";
+import { defineExtension, eventText, type ExtensionContext, type StormCommand } from "@storm-staff/sdk";
 
 const MAX_MESSAGE = 4000;
 
-async function call(ctx: AddonContext, method: string, body: unknown) {
+async function call(ctx: ExtensionContext, method: string, body: unknown) {
   // the address holds the token, so a failed connection must not repeat it
   const res = await ctx
     .fetch(`https://api.telegram.org/bot${ctx.settings.token}/${method}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
@@ -13,7 +13,7 @@ async function call(ctx: AddonContext, method: string, body: unknown) {
 }
 
 // never parsed as markup: usernames and messages are other people's text
-const send = (ctx: AddonContext, chat: string | number, text: string, replyTo?: number) =>
+const send = (ctx: ExtensionContext, chat: string | number, text: string, replyTo?: number) =>
   call(ctx, "sendMessage", { chat_id: chat, text: text.slice(0, MAX_MESSAGE), link_preview_options: { is_disabled: true }, reply_to_message_id: replyTo });
 
 /** Words in order, the last text option taking whatever is left. */
@@ -29,8 +29,8 @@ function argsOf(command: StormCommand, words: string[]) {
 
 const usage = (c: StormCommand) => `/${c.name} ${c.options.map((o) => (o.required ? `<${o.name}>` : `[${o.name}]`)).join(" ")}`.trim();
 
-export default defineAddon({
-  pkg: "storm.addons.telegram",
+export default defineExtension({
+  pkg: "storm.staff.telegram",
   name: "Telegram bot",
   version: "1.0.0",
   description: "Posts storm's news and alerts to Telegram chats, and gives staff slash commands.",

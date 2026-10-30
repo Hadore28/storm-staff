@@ -1,15 +1,15 @@
 import { describe, expect, test } from "bun:test";
-import { SDK_VERSION, type AddonContext, type StormEvent } from "@storm-staff/sdk";
+import { SDK_VERSION, type ExtensionContext, type StormEvent } from "@storm-staff/sdk";
 import discord from "../extensions/discord/src/index";
 import telegram from "../extensions/telegram/src/index";
 
 const hex = (b: ArrayBuffer | Uint8Array) => Buffer.from(b as ArrayBuffer).toString("hex");
 const event: StormEvent = { type: "site.update", audience: "public", title: "New update", text: "Hello", at: new Date().toISOString() };
 
-function context(settings: AddonContext["settings"]) {
+function context(settings: ExtensionContext["settings"]) {
   const sent: { url: string; body: any }[] = [];
   const runs: unknown[][] = [];
-  const ctx: AddonContext = {
+  const ctx: ExtensionContext = {
     settings,
     siteUrl: "https://storm.test",
     hookUrl: "https://storm.test/hook",

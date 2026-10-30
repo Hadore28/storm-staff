@@ -45,7 +45,7 @@ export interface CommandCaller {
   id: string;
 }
 
-export interface AddonContext {
+export interface ExtensionContext {
   settings: Record<string, string | boolean>;
   siteUrl: string;
   /** where this extension's outside service sends things */
@@ -70,8 +70,8 @@ export interface HookResponse {
   json?: unknown;
 }
 
-export interface Addon {
-  /** reverse-domain package name, e.g. "storm.addons.discord" */
+export interface Extension {
+  /** reverse-domain package name, e.g. "storm.staff.discord" */
   pkg: string;
   name: string;
   version: string;
@@ -79,15 +79,15 @@ export interface Addon {
   description: string;
   settings: Setting[];
   /** Something happened on storm. */
-  onEvent?(event: StormEvent, ctx: AddonContext): Promise<void>;
+  onEvent?(event: StormEvent, ctx: ExtensionContext): Promise<void>;
   /** A request arrived from the outside service. */
-  hook?(request: HookRequest, ctx: AddonContext): Promise<HookResponse>;
+  hook?(request: HookRequest, ctx: ExtensionContext): Promise<HookResponse>;
   /** Settings changed: tell the outside service what it needs to know. */
-  sync?(ctx: AddonContext): Promise<void>;
+  sync?(ctx: ExtensionContext): Promise<void>;
 }
 
-export function defineAddon(addon: Omit<Addon, "sdk">): Addon {
-  return { ...addon, sdk: SDK_VERSION };
+export function defineExtension(extension: Omit<Extension, "sdk">): Extension {
+  return { ...extension, sdk: SDK_VERSION };
 }
 
 /** The plain words of an event, for services without rich messages. */

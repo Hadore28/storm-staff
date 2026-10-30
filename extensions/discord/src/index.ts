@@ -1,4 +1,4 @@
-import { defineAddon, type AddonContext, type Audience, type HookResponse } from "@storm-staff/sdk";
+import { defineExtension, type ExtensionContext, type Audience, type HookResponse } from "@storm-staff/sdk";
 
 const API = "https://discord.com/api/v10";
 const COLOR: Record<Audience, number> = { public: 0x7c5cff, staff: 0x38bdf8, security: 0xfbbf24 };
@@ -8,7 +8,7 @@ const EPHEMERAL = 64;
 
 const hex = (s: string) => Uint8Array.from(s.match(/../g) ?? [], (b) => parseInt(b, 16));
 
-async function call(ctx: AddonContext, method: string, path: string, body: unknown) {
+async function call(ctx: ExtensionContext, method: string, path: string, body: unknown) {
   const res = await ctx.fetch(`${API}${path}`, {
     method,
     headers: { Authorization: `Bot ${ctx.settings.token}`, "Content-Type": "application/json" },
@@ -33,8 +33,8 @@ const reply = (content: string): HookResponse => ({
   json: { type: 4, data: { content: content.slice(0, 2000), flags: EPHEMERAL, allowed_mentions: { parse: [] } } },
 });
 
-export default defineAddon({
-  pkg: "storm.addons.discord",
+export default defineExtension({
+  pkg: "storm.staff.discord",
   name: "Discord bot",
   version: "1.0.0",
   description: "Posts storm's news and alerts to Discord channels, and gives staff slash commands.",
@@ -76,6 +76,8 @@ export default defineAddon({
   async sync(ctx) {
     const { token, applicationId, guildId } = ctx.settings;
     if (!token || !applicationId || !guildId) return;
+    // Discord tests this address by calling it, so the public key must already be saved
+    await call(ctx, "PATCH", "/applications/@me", { interactions_endpoint_url: ctx.hookUrl });
     await call(
       ctx,
       "PUT",
