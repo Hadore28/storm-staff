@@ -19,6 +19,7 @@ function context(settings: ExtensionContext["settings"]) {
       { name: "code", description: "Code", options: [], private: true },
     ],
     run: async (...a) => (runs.push(a), "done"),
+    link: async (code) => code === "good",
     fetch: async (url, init) => (sent.push({ url, body: JSON.parse(String(init?.body)) }), new Response("{}")),
     log: () => {},
   };
@@ -110,4 +111,29 @@ describe("telegram", () => {
     expect(sent[0].body.chat_id).toBe("@storm");
     expect(sent[0].body.parse_mode).toBeUndefined();
   });
+});
+
+test("telegram connects a person from a start link, in private only", async () => {
+  const { ctx, sent } = context({ token: "t" });
+  const hook = (text: string, type: string) =>
+    telegram.hook!({ headers: { "x-telegram-bot-api-secret-token": "s3cret" }, body: JSON.stringify({ message: { message_id: 1, text, chat: { id: 7, type }, from: { id: 7 } } }) }, ctx);
+  await hook("/start good", "private");
+  expect(sent[0].body.text).toContain("Connected");
+  await hook("/start stale", "private");
+  expect(sent[1].body.text).toContain("expired");
+  await hook("/start good", "group");
+  expect(sent).toHaveLength(2);
+});
+
+test("both write to one person", async () => {
+  const m = { title: "Show", text: "Episode 4", url: "https://storm.test/w" };
+  const a = context({ token: "t" });
+  await telegram.message!("7", m, a.ctx);
+  expect(a.sent[0].body.chat_id).toBe("7");
+  expect(a.sent[0].body.text).toContain("https://storm.test/w");
+  const b = context({ token: "t" });
+  b.ctx.fetch = async (url, init) => (b.sent.push({ url, body: JSON.parse(String(init?.body)) }), new Response(JSON.stringify({ id: "99" })));
+  await discord.message!("7", m, b.ctx);
+  expect(b.sent[0].body.recipient_id).toBe("7");
+  expect(b.sent[1].url).toContain("/channels/99/messages");
 });

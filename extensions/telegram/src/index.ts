@@ -10,6 +10,7 @@ async function call(ctx: ExtensionContext, method: string, body: unknown) {
       throw new Error("Telegram couldn't be reached");
     });
   if (!res.ok) throw new Error(`Telegram answered ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  return res.json() as Promise<{ result?: { username?: string } }>;
 }
 
 // never parsed as markup: usernames and messages are other people's text
@@ -32,7 +33,7 @@ const usage = (c: StormCommand) => `/${c.name} ${c.options.map((o) => (o.require
 export default defineExtension({
   pkg: "storm.staff.telegram",
   name: "Telegram bot",
-  version: "1.0.0",
+  version: "1.1.0",
   description: "Posts storm's news and alerts to Telegram chats, and gives staff slash commands.",
   settings: [
     { id: "token", type: "secret", label: "Bot token", description: "From @BotFather, after /newbot." },
@@ -52,6 +53,11 @@ export default defineExtension({
     if (!m?.text?.startsWith("/") || !m.from) return { status: 200 };
     const [head, ...words] = m.text.trim().split(/\s+/);
     const name = head.slice(1).split("@")[0].toLowerCase();
+    if (name === "start" && words[0] && m.chat.type === "private") {
+      const linked = await ctx.link(words[0], String(m.chat.id));
+      await send(ctx, m.chat.id, linked ? "Connected to storm. Pick a series and I'll tell you when something new is out.\n\nتم الربط مع storm. اختر مسلسلاً وسأخبرك عند صدور الجديد." : "That link has expired. Go back to storm and try again.\n\nانتهت صلاحية الرابط. عد إلى storm وحاول مرة أخرى.");
+      return { status: 200 };
+    }
     const command = ctx.commands.find((c) => c.name === name);
     if (!command) return { status: 200 };
     if (command.private && m.chat.type !== "private") {
@@ -64,6 +70,16 @@ export default defineExtension({
     }
     await send(ctx, m.chat.id, await ctx.run(name, argsOf(command, words), { platform: "telegram", id: String(m.from.id) }), m.message_id);
     return { status: 200 };
+  },
+
+  async message(to, m, ctx) {
+    await send(ctx, to, [m.title, m.text, m.url].join("\n\n"));
+  },
+
+  async connectUrl(code, ctx) {
+    if (!ctx.settings.token) return null;
+    const name = (await call(ctx, "getMe", {})).result?.username;
+    return name ? `https://t.me/${name}?start=${code}` : null;
   },
 
   async sync(ctx) {

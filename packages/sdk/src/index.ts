@@ -25,6 +25,13 @@ export interface StormEvent {
   at: string;
 }
 
+/** One person's message about something they asked to hear about. */
+export interface PrivateMessage {
+  title: string;
+  text: string;
+  url: string;
+}
+
 export interface CommandOption {
   name: string;
   description: string;
@@ -55,6 +62,8 @@ export interface ExtensionContext {
   commands: StormCommand[];
   /** Runs a command as the caller; staff checks and the audit log happen on storm's side. */
   run(name: string, args: Record<string, string>, caller: CommandCaller): Promise<string>;
+  /** Connects whoever brought this code from the site; false when it's wrong or too old. */
+  link(code: string, id: string): Promise<boolean>;
   fetch(url: string, init?: RequestInit): Promise<Response>;
   log(message: string): void;
 }
@@ -82,6 +91,10 @@ export interface Extension {
   onEvent?(event: StormEvent, ctx: ExtensionContext): Promise<void>;
   /** A request arrived from the outside service. */
   hook?(request: HookRequest, ctx: ExtensionContext): Promise<HookResponse>;
+  /** Writes to one person, by their id on this service. */
+  message?(to: string, message: PrivateMessage, ctx: ExtensionContext): Promise<void>;
+  /** Where someone goes to connect this service to their storm account. */
+  connectUrl?(code: string, ctx: ExtensionContext): Promise<string | null>;
   /** Settings changed: tell the outside service what it needs to know. */
   sync?(ctx: ExtensionContext): Promise<void>;
 }

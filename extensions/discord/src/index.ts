@@ -15,6 +15,7 @@ async function call(ctx: ExtensionContext, method: string, path: string, body: u
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Discord answered ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  return res.json() as Promise<{ id?: string }>;
 }
 
 async function signedByDiscord(publicKey: string, signature: string, timestamp: string, body: string) {
@@ -36,13 +37,14 @@ const reply = (content: string): HookResponse => ({
 export default defineExtension({
   pkg: "storm.staff.discord",
   name: "Discord bot",
-  version: "1.0.0",
+  version: "1.1.0",
   description: "Posts storm's news and alerts to Discord channels, and gives staff slash commands.",
   settings: [
     { id: "token", type: "secret", label: "Bot token", description: "Discord Developer Portal → your app → Bot → Reset Token." },
     { id: "publicKey", type: "text", label: "Public key", default: "", description: "General Information → Public Key." },
     { id: "applicationId", type: "text", label: "Application ID", default: "", description: "General Information → Application ID." },
     { id: "guildId", type: "text", label: "Server ID", default: "", description: "Right-click your server → Copy Server ID." },
+    { id: "invite", type: "text", label: "Server invite link", default: "", description: "Discord only lets the bot message people who share a server with it; they're sent here to join." },
     { id: "public", type: "text", label: "Announcements channel ID", default: "", description: "News and updates for everyone. Empty turns them off." },
     { id: "staff", type: "text", label: "Staff channel ID", default: "", description: "Tickets, reports, sign-ups and Premium." },
     { id: "security", type: "text", label: "Security channel ID", default: "", description: "Staff sign-ins and new admin addresses." },
@@ -71,6 +73,14 @@ export default defineExtension({
     if (i.type !== 2 || !i.data || !id) return { status: 400 };
     const args = Object.fromEntries((i.data.options ?? []).map((o) => [o.name, String(o.value)]));
     return reply(await ctx.run(i.data.name, args, { platform: "discord", id }));
+  },
+
+  async message(to, m, ctx) {
+    const dm = await call(ctx, "POST", "/users/@me/channels", { recipient_id: to });
+    await call(ctx, "POST", `/channels/${dm.id}/messages`, {
+      embeds: [{ title: m.title.slice(0, 256), description: m.text.slice(0, 4000), url: m.url, color: COLOR.public }],
+      allowed_mentions: { parse: [] },
+    });
   },
 
   async sync(ctx) {
