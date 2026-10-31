@@ -1,25 +1,25 @@
 {
   "format": 1,
   "sdk": 1,
-  "generatedAt": "2026-10-30T19:03:19.744Z",
+  "generatedAt": "2026-10-31T09:50:31.800Z",
   "extensions": [
     {
       "pkg": "storm.staff.discord",
       "name": "Discord bot",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "description": "Posts storm's news and alerts to Discord channels, and gives staff slash commands.",
-      "file": "extensions/storm.staff.discord-1.0.0.js",
-      "sha256": "a875c35ebe8f6d908e7ae55d47c2977159aecea6d5ebbb4a3a72012eea22e58f",
-      "size": 3501
+      "file": "extensions/storm.staff.discord-1.1.0.js",
+      "sha256": "d33324e89c01bb3c42e636723fe9f763d981bb58f054b5b7c23ba93dcd89f074",
+      "size": 3971
     },
     {
       "pkg": "storm.staff.telegram",
       "name": "Telegram bot",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "description": "Posts storm's news and alerts to Telegram chats, and gives staff slash commands.",
-      "file": "extensions/storm.staff.telegram-1.0.0.js",
-      "sha256": "92095dddeac69a59348bca6e802210ceac43149c47e96c8b9a1377eb3ffbb3f6",
-      "size": 2922
+      "file": "extensions/storm.staff.telegram-1.1.0.js",
+      "sha256": "454fdeb4457e3172947463b4df43a988e8c97e67fe1528f285366a919989eba4",
+      "size": 3602
     }
   ]
 }
